@@ -24,8 +24,8 @@ async def search_file(client, message):
 
 @app.on_callback_query(filters.regex("^get_"))
 async def callback_handler(client, query):
-    # Yeh line ab ekdum simple hai
-    parts = query.data.split("_")
+    raw_data = query.data
+    parts = raw_data.split("_")
     msg_id = int(parts)
     
     sent = await client.copy_message(chat_id=query.message.chat.id, from_chat_id=DB_CHANNEL_ID, message_id=msg_id)
