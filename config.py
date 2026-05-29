@@ -2,7 +2,7 @@ import os
 
 API_ID = int(os.environ.get("API_ID", "36191326"))
 API_HASH = os.environ.get("API_HASH", "db41b3636e96ac3ae96561010f0ceeca")
-BOT_TOKEN = os.environ.get("BOT_TOKEN", "")
+BOT_TOKEN = os.environ.get("BOT_TOKEN", "8863078609:AAFP6Do_XeGa3_mFBw55adzK4ekdKHTDSvk")
 
 # Admin ID: Yahan apni Telegram User ID daal (taki koi aur bot ko control na kar sake)
 ADMIN_ID = int(os.environ.get("ADMIN_ID", "6024953191")) 
