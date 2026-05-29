@@ -5,7 +5,7 @@ from pyrogram import Client, filters
 # Best practice: inko environment variables mein rakho
 api_id = "36191326"
 api_hash = "db41b3636e96ac3ae96561010f0ceeca"
-bot_token = "your_bot_token"
+bot_token = "8863078609:AAFP6Do_XeGa3_mFBw55adzK4ekdKHTDSvk"
 
 app = Client("my_bot", api_id=api_id, api_hash=api_hash, bot_token=bot_token)
 
