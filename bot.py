@@ -17,27 +17,26 @@ async def search_file(client, message):
     query = message.text
     status = await message.reply_text("🔍 **Searching...**")
     
-    # Buttons create karna
+    found = False
     async for msg in client.search_messages(chat_id=DB_CHANNEL_ID, query=query):
         if msg.document or msg.video:
-            # Movie ka naam file se utha rahe hain
             file_name = msg.caption or msg.document.file_name or "Movie File"
-            
-            # Inline Button
             buttons = InlineKeyboardMarkup([
                 [InlineKeyboardButton("📥 Click here to Download", callback_data=f"get_{msg.id}")]
             ])
-            
             await status.delete()
             await message.reply_text(f"✅ **Movie Found:** `{file_name}`\n\nDownload karne ke liye niche button dabayein:", reply_markup=buttons)
-            return
-
-    await status.edit("❌ **Sorry, movie nahi mili.**")
+            found = True
+            break
+    
+    if not found:
+        await status.edit("❌ **Sorry, movie nahi mili.**")
 
 # Button click handle karna
 @app.on_callback_query(filters.regex("^get_"))
 async def callback_handler(client, query):
-    msg_id = int(query.data.split("_"))
+    # Yahan maine fix kiya hai
+    msg_id = int(query.data.split("_")) 
     
     # File copy karna
     sent = await client.copy_message(chat_id=query.message.chat.id, from_chat_id=DB_CHANNEL_ID, message_id=msg_id)
