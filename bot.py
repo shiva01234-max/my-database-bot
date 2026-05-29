@@ -7,7 +7,7 @@ API_ID = "36191326"
 API_HASH = "db41b3636e96ac3ae96561010f0ceeca"   
 BOT_TOKEN = "8863078609:AAFP6Do_XeGa3_mFBw55adzK4ekdKHTDSvk" 
 # Database Channel ID 
-DB_CHANNEL_ID = " -1003773475761"
+DB_CHANNEL_ID = "-1003773475761"
 
 # External Media & Links
 THANK_YOU_IMAGE = "https://graph.org/file/your_uploaded_savi_ai_image.jpg"
