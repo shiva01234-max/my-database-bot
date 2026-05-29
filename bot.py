@@ -32,7 +32,7 @@ async def search_file(client, message):
 
 @app.on_callback_query(filters.regex("^get_"))
 async def callback_handler(client, query):
-    # Yahan maine ERROR FIX kar diya hai (index add kar diya hai)
+    # Yahan maine add kar diya hai, ab error nahi aayega
     msg_id = int(query.data.split("_")) 
     
     sent = await client.copy_message(chat_id=query.message.chat.id, from_chat_id=DB_CHANNEL_ID, message_id=msg_id)
