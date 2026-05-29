@@ -138,7 +138,8 @@ async def handle_callback(client, callback_query):
             await client.send_message(chat_id=chat_id, text="❌ Yeh file send nahi ho paayi. Kripya admin se sampark karein.")
 
 
-# --- RUN BOT ---
 if __name__ == "__main__":
-    print("🔥 SAVI.AI Strict Auto-Filter Bot is Live! 🔥")
-    app.run()
+    app.start()
+    print("🔥 Bot is running... 🔥")
+    idle()
+    app.stop()
