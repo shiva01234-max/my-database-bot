@@ -1,32 +1,56 @@
 import asyncio
 from pyrogram import Client, filters
+from config import API_ID, API_HASH, BOT_TOKEN, DB_CHANNEL_ID, WELCOME_PIC, ADMIN_ID
 
-# Apni API_ID, API_HASH aur BOT_TOKEN yahan daalo
-# Best practice: inko environment variables mein rakho
-api_id = "36191326"
-api_hash = "db41b3636e96ac3ae96561010f0ceeca"
-bot_token = "8863078609:AAFP6Do_XeGa3_mFBw55adzK4ekdKHTDSvk"
+app = Client("ChannelBot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
-app = Client("my_bot", api_id=api_id, api_hash=api_hash, bot_token=bot_token)
+# 1. Sirf Private Chat ke liye filter
+private_only = filters.private
 
-@app.on_message(filters.command("start"))
-async def start_command(client, message):
-    # Tumhara custom branding message
-    text = (
-        "**Welcome to savi.stream!**\n\n"
-        "Main ek database bot hoon.\n"
-        "Developed by **Shiva**"
+# Start command
+@app.on_message(filters.command("start") & private_only)
+async def start(client, message):
+    welcome_text = (
+        f"👋 **Hello {message.from_user.first_name}!**\n\n"
+        "Main is channel ka Database Bot hoon.\n"
+        "🎬 Filmein chahiye? Toh bas mujhe movie ka naam bhejo.\n\n"
+        "💡 **Note:** Main sirf yahan DM mein kaam karta hoon, kisi group mein nahi!"
     )
-    # Agar logo bhejna hai toh yahan photo ka link ya file_id daalo
-    await message.reply_text(text)
-
-async def main():
-    await app.start()
-    print("Bot started successfully!")
-    await asyncio.Event().wait() # Bot ko chalate rehne ke liye
-
-if __name__ == "__main__":
     try:
-        app.run(main())
+        await message.reply_photo(photo=WELCOME_PIC, caption=welcome_text)
+    except Exception:
+        await message.reply_text(welcome_text)
+
+# 2. Movie Search (Sirf Private)
+@app.on_message(filters.text & private_only & ~filters.command(["start"]))
+async def search_file(client, message):
+    query = message.text
+    # Admin ke liye check
+    if message.from_user.id == ADMIN_ID:
+        await message.reply_text("Admin, aapka command received!")
+        
+    status_msg = await message.reply_text("🔍 **Dhoondh raha hoon...**")
+    
+    found = 0
+    try:
+        async for msg in client.search_messages(chat_id=DB_CHANNEL_ID, query=query):
+            if msg.document or msg.video or msg.audio:
+                found += 1
+                sent_file = await msg.copy(chat_id=message.chat.id)
+                warning_msg = await message.reply_text("⚠️ **5 minute mein delete ho jayega!**")
+                asyncio.create_task(delete_after_delay(sent_file, 300))
+                asyncio.create_task(delete_after_delay(warning_msg, 300))
+        
+        if found == 0:
+            await status_msg.edit("❌ **Nahi mili!** Spelling check kar le.")
+        else:
+            await status_msg.delete()
     except Exception as e:
-        print(f"Error: {e}")
+        await status_msg.edit(f"⚠️ **Error:** {e}")
+
+async def delete_after_delay(message, delay=300):
+    await asyncio.sleep(delay)
+    try: await message.delete()
+    except: pass
+
+app.run()
