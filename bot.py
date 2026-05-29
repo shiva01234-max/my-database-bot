@@ -1,40 +1,32 @@
 import asyncio
 from pyrogram import Client, filters
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from config import API_ID, API_HASH, BOT_TOKEN, DB_CHANNEL_ID, WELCOME_PIC, ADMIN_ID
 
-app = Client("ChannelBot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
+# Apni API_ID, API_HASH aur BOT_TOKEN yahan daalo
+# Best practice: inko environment variables mein rakho
+api_id = "36191326"
+api_hash = "db41b3636e96ac3ae96561010f0ceeca"
+bot_token = "your_bot_token"
 
-@app.on_message(filters.command("start") & filters.private)
-async def start(client, message):
-    await message.reply_photo(photo=WELCOME_PIC, caption="👋 Hello! Movie ka naam bhejo.")
+app = Client("my_bot", api_id=api_id, api_hash=api_hash, bot_token=bot_token)
 
-@app.on_message(filters.text & filters.private & ~filters.command(["start"]))
-async def search_file(client, message):
-    query = message.text
-    status = await message.reply_text("🔍 Searching...")
-    
-    async for msg in client.search_messages(chat_id=DB_CHANNEL_ID, query=query):
-        if msg.document or msg.video:
-            buttons = InlineKeyboardMarkup([[InlineKeyboardButton("📥 Download", callback_data=f"get_{msg.id}")]])
-            await status.delete()
-            await message.reply_text(f"✅ Found: {msg.caption or 'Movie'}", reply_markup=buttons)
-            return
-    await status.edit("❌ Nahi mili.")
+@app.on_message(filters.command("start"))
+async def start_command(client, message):
+    # Tumhara custom branding message
+    text = (
+        "**Welcome to savi.stream!**\n\n"
+        "Main ek database bot hoon.\n"
+        "Developed by **Shiva**"
+    )
+    # Agar logo bhejna hai toh yahan photo ka link ya file_id daalo
+    await message.reply_text(text)
 
-@app.on_callback_query(filters.regex("^get_"))
-async def callback_handler(client, query):
-    raw_data = query.data
-    parts = raw_data.split("_")
-    msg_id = int(parts)
-    
-    sent = await client.copy_message(chat_id=query.message.chat.id, from_chat_id=DB_CHANNEL_ID, message_id=msg_id)
-    await query.message.reply_text("⚠️ 5 minute mein delete ho jayega!")
-    asyncio.create_task(delete_after(sent))
+async def main():
+    await app.start()
+    print("Bot started successfully!")
+    await asyncio.Event().wait() # Bot ko chalate rehne ke liye
 
-async def delete_after(message):
-    await asyncio.sleep(300)
-    try: await message.delete()
-    except: pass
-
-app.run()
+if __name__ == "__main__":
+    try:
+        app.run(main())
+    except Exception as e:
+        print(f"Error: {e}")
